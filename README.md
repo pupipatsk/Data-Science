@@ -15,10 +15,16 @@
 - Bank of Thailand
   - [Used Vehicle Price Index (UVPI)](https://www.bot.or.th/content/dam/bot/documents/th/research-and-publications/research/stat-horizon-and-stat-in-focus/stat-horizon/UVPI.pdf)
 
-## Data Source
+## Data Sources
 - [Bank of Thailand](https://www.bot.or.th/en/statistics.html)
 - [Thailand Office of Industrial Economics](https://www.oie.go.th/view/1/industrial_indices/EN-US)
 - [The Federation of Thai Industries](https://fti.or.th/ids/)
+- [Thailand Office of Agricultural Economics](https://www.oae.go.th/view/1/%E0%B8%82%E0%B9%89%E0%B8%AD%E0%B8%A1%E0%B8%B9%E0%B8%A5%E0%B9%80%E0%B8%A8%E0%B8%A3%E0%B8%A9%E0%B8%90%E0%B8%81%E0%B8%B4%E0%B8%88%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%80%E0%B8%81%E0%B8%A9%E0%B8%95%E0%B8%A3/TH-TH)
+- [Thailand Ministry of Commerce](https://www.moc.go.th/en/page/item/index/id/6)
+- [Thailand Department of Land Transport](https://web.dlt.go.th/statistics/)
+- [China Association of Automobile Manufacturers](http://en.caam.org.cn/Index/lists/catid/69.html)
+- [Japan Automobile Manufacturers Association](https://jamaserv.jama.or.jp/newdb/eng/index.html)
+- [Bank of Japan](https://www.boj.or.jp/en/statistics/index.htm)
 
 ## miscellaneous
 ML Workflow
