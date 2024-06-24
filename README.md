@@ -12,6 +12,7 @@
   - [Paper](https://arxiv.org/pdf/2001.08025)
   - [GitHub](https://github.com/guillermo-navas-palencia/optbinning.git)
   - [Website](https://gnpalencia.org/optbinning/)
+- [Synthetic Minority Over-sampling Technique (SMOTE)](https://arxiv.org/pdf/1106.1813)
 - Bank of Thailand
   - [Used Vehicle Price Index (UVPI)](https://www.bot.or.th/content/dam/bot/documents/th/research-and-publications/research/stat-horizon-and-stat-in-focus/stat-horizon/UVPI.pdf)
 
