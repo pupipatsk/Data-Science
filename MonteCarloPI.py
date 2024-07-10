@@ -1,5 +1,5 @@
 # Monte carlo approximation of pi
-# Approach: Circle in unit Square
+# Approach: 1/4Circle in unit Square
 
 import random
 import math
@@ -13,6 +13,7 @@ inside_count = 0
 iterations = 1000000
 for i in range(iterations):
     total_count += 1
+    
     x = random.random() # Returns a random float number between 0 and 1
     y = random.random()
 
