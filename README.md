@@ -15,7 +15,8 @@
 - [Synthetic Minority Over-sampling Technique (SMOTE)](https://arxiv.org/pdf/1106.1813)
 - Bank of Thailand
   - [Used Vehicle Price Index (UVPI)](https://www.bot.or.th/content/dam/bot/documents/th/research-and-publications/research/stat-horizon-and-stat-in-focus/stat-horizon/UVPI.pdf)
-- [Portfolio Selection, Harry Markowitz](https://www.jstor.org/stable/2975974)
+- [Harry Markowitz, Portfolio Selection](https://www.jstor.org/stable/2975974)
+- [Eugene F. Fama, The Behavior of Stock-Market Prices](https://www.jstor.org/stable/2350752)
 
 ## Data Sources
 - [Bank of Thailand](https://www.bot.or.th/en/statistics.html)
