@@ -1,0 +1,12 @@
+python
+jupyter
+GitHub Copilot
+IntelliCode
+Better Comments
+Path Intellisense
+autoDocstring
+Black Formatter
+Material Icon Theme
+ESLint
+Rainbow CSV
+Python Indent
