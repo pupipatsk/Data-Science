@@ -26,7 +26,3 @@
 - [China Association of Automobile Manufacturers](http://en.caam.org.cn/Index/lists/catid/69.html)
 - [Japan Automobile Manufacturers Association](https://jamaserv.jama.or.jp/newdb/eng/index.html)
 - [Bank of Japan](https://www.boj.or.jp/en/statistics/index.htm)
-
-## miscellaneous
-ML Workflow
-![Workflow](workflow.png)
