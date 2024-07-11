@@ -4,14 +4,14 @@
 - Marcos López de Prado, "Advances in Financial Machine Learning"
   - [Fractional differentiation](https://github.com/fracdiff/fracdiff.git)
 - [Stefan Jansen, "Machine Learning for Algorithmic Trading"](https://github.com/stefan-jansen/machine-learning-for-trading.git)
-- Shapley values (SHAP)
-  - [Nature MI Paper](https://www.nature.com/articles/s42256-019-0138-9.epdf?shared_access_token=RCYPTVkiECUmc0CccSMgXtRgN0jAjWel9jnR3ZoTv0O81kV8DqPb2VXSseRmof0Pl8YSOZy4FHz5vMc3xsxcX6uT10EzEoWo7B-nZQAHJJvBYhQJTT1LnJmpsa48nlgUWrMkThFrEIvZstjQ7Xdc5g%3D%3D)
-  - [GitHub](https://github.com/shap/shap.git)
-  - [Website](https://shap.readthedocs.io/en/latest/)
-- Optimal binning
-  - [Paper](https://arxiv.org/pdf/2001.08025)
-  - [GitHub](https://github.com/guillermo-navas-palencia/optbinning.git)
-  - [Website](https://gnpalencia.org/optbinning/)
+- Shapley values (SHAP):
+[Nature MI Paper](https://www.nature.com/articles/s42256-019-0138-9.epdf?shared_access_token=RCYPTVkiECUmc0CccSMgXtRgN0jAjWel9jnR3ZoTv0O81kV8DqPb2VXSseRmof0Pl8YSOZy4FHz5vMc3xsxcX6uT10EzEoWo7B-nZQAHJJvBYhQJTT1LnJmpsa48nlgUWrMkThFrEIvZstjQ7Xdc5g%3D%3D)
+, [GitHub](https://github.com/shap/shap.git)
+, [Website](https://shap.readthedocs.io/en/latest/)
+- XGBoost: [Paper](https://arxiv.org/pdf/1603.02754), [GitHub](https://github.com/dmlc/xgboost.git)
+- LightGBM: [Paper](https://papers.nips.cc/paper_files/paper/2017/file/6449f44a102fde848669bdd9eb6b76fa-Paper.pdf), [GitHub](https://github.com/microsoft/LightGBM.git)
+- CatBoost: [Paper](http://learningsys.org/nips17/assets/papers/paper_11.pdf), [GitHub](https://github.com/catboost/catboost.git)
+- Optimal binning: [Paper](https://arxiv.org/pdf/2001.08025), [GitHub](https://github.com/guillermo-navas-palencia/optbinning.git), [Website](https://gnpalencia.org/optbinning/)
 - [Synthetic Minority Over-sampling Technique (SMOTE)](https://arxiv.org/pdf/1106.1813)
 - Bank of Thailand
   - [Used Vehicle Price Index (UVPI)](https://www.bot.or.th/content/dam/bot/documents/th/research-and-publications/research/stat-horizon-and-stat-in-focus/stat-horizon/UVPI.pdf)
