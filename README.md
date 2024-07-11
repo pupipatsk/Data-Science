@@ -1,6 +1,6 @@
 # Data-Science
 
-## Literature / Textbook
+## Literature / Textbook / Journal Article
 - Marcos López de Prado, "Advances in Financial Machine Learning"
   - [Fractional differentiation](https://github.com/fracdiff/fracdiff.git)
 - [Stefan Jansen, "Machine Learning for Algorithmic Trading"](https://github.com/stefan-jansen/machine-learning-for-trading.git)
@@ -15,6 +15,7 @@
 - [Synthetic Minority Over-sampling Technique (SMOTE)](https://arxiv.org/pdf/1106.1813)
 - Bank of Thailand
   - [Used Vehicle Price Index (UVPI)](https://www.bot.or.th/content/dam/bot/documents/th/research-and-publications/research/stat-horizon-and-stat-in-focus/stat-horizon/UVPI.pdf)
+- [Portfolio Selection, Harry Markowitz](https://www.jstor.org/stable/2975974)
 
 ## Data Sources
 - [Bank of Thailand](https://www.bot.or.th/en/statistics.html)
