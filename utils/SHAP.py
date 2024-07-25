@@ -1,13 +1,14 @@
 import shap
 shap.initjs()
 
-
+# req: model, X_train
 X_sampled = X_train.sample(100, random_state=42)
 
 explainer = shap.TreeExplainer(model)
 shap_values = explainer.shap_values(X_sampled.to_numpy())
 
-shap.force_plot(explainer.expected_value, shap_values[0,:], X_sampled.iloc[0,:])
+# Visualize
+shap.force_plot(explainer.expected_value, shap_values[0, :], X_sampled.iloc[0, :])
 
 shap.force_plot(explainer.expected_value, shap_values, X_sampled)
 

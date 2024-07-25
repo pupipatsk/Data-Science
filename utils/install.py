@@ -1,4 +1,4 @@
-pip install pandas numpy ipykernel scikit-learn scipy statsmodels xgboost matplotlib seaborn plotly shap fracdiff tqdm tslearn kneed
+pip install pandas numpy ipykernel scikit-learn scipy statsmodels xgboost matplotlib seaborn plotly
 
 # ------------------- Conda ------------------- #
 
