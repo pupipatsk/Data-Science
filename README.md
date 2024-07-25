@@ -1,6 +1,7 @@
 # Data-Science
 
 ## Literature / Textbook / Journal Article
+
 - Marcos López de Prado, "Advances in Financial Machine Learning"
   - [Fractional differentiation](https://github.com/fracdiff/fracdiff.git)
 - [Stefan Jansen, "Machine Learning for Algorithmic Trading"](https://github.com/stefan-jansen/machine-learning-for-trading.git)
@@ -13,12 +14,21 @@
 - CatBoost: [Paper](https://arxiv.org/abs/1706.09516), [GitHub](https://github.com/catboost/catboost.git)
 - Optimal binning: [Paper](https://arxiv.org/pdf/2001.08025), [GitHub](https://github.com/guillermo-navas-palencia/optbinning.git), [Website](https://gnpalencia.org/optbinning/)
 - [Synthetic Minority Over-sampling Technique (SMOTE)](https://arxiv.org/pdf/1106.1813)
-- Bank of Thailand: [Used Vehicle Price Index (UVPI)](https://www.bot.or.th/content/dam/bot/documents/th/research-and-publications/research/stat-horizon-and-stat-in-focus/stat-horizon/UVPI.pdf)
-- Bank of England: [Modelling credit risk](https://www.bankofengland.co.uk/-/media/boe/files/ccbs/resources/modelling-credit-risk)
-- [Harry Markowitz, Portfolio Selection](https://www.jstor.org/stable/2975974)
-- [Eugene F. Fama, The Behavior of Stock-Market Prices](https://www.jstor.org/stable/2350752)
+- [Harry Markowitz, "Portfolio Selection"](https://www.jstor.org/stable/2975974)
+- [Eugene F. Fama, "The Behavior of Stock-Market Prices"](https://www.jstor.org/stable/2350752)
+
+## Useful Links
+
+- [Three Approaches to Encoding Time Information as Features for ML Models | NVIDIA Technical Blog](https://developer.nvidia.com/blog/three-approaches-to-encoding-time-information-as-features-for-ml-models/)
+- [Forecasting: Principles and Practice (3rd ed), Rob J Hyndman and George Athanasopoulos](https://otexts.com/fpp3/)
+- [Modelling credit risk | Bank of England](https://www.bankofengland.co.uk/-/media/boe/files/ccbs/resources/modelling-credit-risk)
+- [Macroeconomic Predictions using Payments Data and
+Machine Learning | Bank of Canada](https://www.bankofcanada.ca/wp-content/uploads/2022/03/swp2022-10.pdf)
+- [Used Vehicle Price Index (UVPI) | Bank of Thailand](https://www.bot.or.th/content/dam/bot/documents/th/research-and-publications/research/stat-horizon-and-stat-in-focus/stat-horizon/UVPI.pdf)
+- [Explainable Machine Learning Models of Consumer Credit Risk](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4006840)
 
 ## Data Sources
+
 - [Bank of Thailand](https://www.bot.or.th/en/statistics.html)
 - [Thailand Office of Industrial Economics](https://www.oie.go.th/view/1/industrial_indices/EN-US)
 - [The Federation of Thai Industries](https://fti.or.th/ids/)
