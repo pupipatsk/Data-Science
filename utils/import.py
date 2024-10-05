@@ -43,9 +43,9 @@ import plotly.graph_objects as go
 ### --- iPython Config --- ###
 from IPython import get_ipython
 if 'IPython.extensions.autoreload' not in get_ipython().extension_manager.loaded:
-    %load_ext autoreload
+    get_ipython().run_line_magic('load_ext', 'autoreload')
 else:
-    %reload_ext autoreload
+    get_ipython().run_line_magic('reload_ext', 'autoreload')
 %autoreload 2
 
 ### --- Custom Modules --- ###
