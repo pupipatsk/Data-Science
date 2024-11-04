@@ -30,8 +30,6 @@ from xgboost import XGBRegressor
 
 ### --- Visualization --- ###
 import matplotlib.pyplot as plt
-plt.style.use('seaborn-v0_8-whitegrid')
-# plt.rcParams["font.family"] = "tahoma" # TH font
 
 import seaborn as sns
 sns.set_theme(style="whitegrid")
