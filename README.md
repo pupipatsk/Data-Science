@@ -1,7 +1,9 @@
 # Data-Science
 
 ## Project
-- [Ai Hackathon Thailand 2023](https://github.com/pupipatsk/Aihack-Thailand-2023.git): Created a credit risk model using a machine learning approach to forecast individuals who are likely to default.
+- **Ai Hackathon Thailand**: Created a credit risk model using a machine learning approach to forecast individuals who are likely to default.
+  - [Aihack-Thailand-2024](https://github.com/pupipatsk/Aihack-Thailand-2024.git): Implemented a Python-based pipeline designed for optimal performance and efficient memory usage.
+  - [Aihack-Thailand-2023](https://github.com/pupipatsk/Aihack-Thailand-2023.git)
 - [Stock Return Forecasting ML and LSTM](https://github.com/pupipatsk/Stock-Return-Forecasting-ML-and-LSTM.git): Built machine learning and LSTM models to predict stock returns based on historical data.
 - [SAS xCBS Hackathon 2024](https://github.com/pupipatsk/SAS-Hackathon-2024.git): Direct-contact fundraising campaign using machine learning to maximize revenue by predicting donor contributions and reducing outreach costs.
 - [Investment Portfolio Analytics Dashboard Web App](https://github.com/pupipatsk/Investment-Portfolio.git): Python-based project designed to track and analyze investment transactions from various sources.
