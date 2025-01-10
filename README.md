@@ -24,6 +24,7 @@
 - [Synthetic Minority Over-sampling Technique (SMOTE)](https://arxiv.org/pdf/1106.1813)
 - [Harry Markowitz, "Portfolio Selection"](https://www.jstor.org/stable/2975974)
 - [Eugene F. Fama, "The Behavior of Stock-Market Prices"](https://www.jstor.org/stable/2350752)
+- TabPFN: [Nature Paper](https://www.nature.com/articles/s41586-024-08328-6), [GitHub](https://github.com/PriorLabs/TabPFN.git)
 
 ## Useful Links
 
