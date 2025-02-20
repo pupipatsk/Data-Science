@@ -5,8 +5,11 @@
   - [Aihack-Thailand-2024](https://github.com/pupipatsk/Aihack-Thailand-2024.git): Implemented a Python-based pipeline designed for optimal performance and efficient memory usage.
   - [Aihack-Thailand-2023](https://github.com/pupipatsk/Aihack-Thailand-2023.git)
 - [Stock Return Forecasting ML and LSTM](https://github.com/pupipatsk/Stock-Return-Forecasting-ML-and-LSTM.git): Built machine learning and LSTM models to predict stock returns based on historical data.
-- [SAS xCBS Hackathon 2024](https://github.com/pupipatsk/SAS-Hackathon-2024.git): Direct-contact fundraising campaign using machine learning to maximize revenue by predicting donor contributions and reducing outreach costs.
 - [Investment Portfolio Analytics Dashboard Web App](https://github.com/pupipatsk/Investment-Portfolio.git): Python-based project designed to track and analyze investment transactions from various sources.
+- [Fraud Detection European Credit Card Transactions 2023](https://github.com/pupipatsk/fraud-detection-european-credit-card-transactions-2023.git): Developed a machine learning pipeline to detect fraudulent transactions in European credit card data.
+- [ML for Fundraising Campaigns - SAS xCBS Hackathon 2024](https://github.com/pupipatsk/SAS-Hackathon-2024.git): Direct-contact fundraising campaign using machine learning to maximize revenue by predicting donor contributions and reducing outreach costs.
+- [Chatbot with Retrieval Augmented Generation (RAG)](./notebooks/chatbot-with-retrieval-augmented-generation-rag.ipynb)
+- [Computer Vision for Strawberry Farming](./notebooks/computer-vision-for-strawberry-farming.ipynb)
 
 ## Literature / Textbook / Journal Article
 
