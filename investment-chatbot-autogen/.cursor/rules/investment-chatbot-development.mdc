@@ -1,0 +1,162 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Investment Analysis Chatbot Development Rules
+
+## Project Overview
+This project develops an investment analysis chatbot using Microsoft's AutoGen Framework. The main implementation is in [main.ipynb](mdc:main.ipynb).
+
+## Code Standards and Best Practices
+
+### Python Style Guidelines (PEP 8)
+- Use 4 spaces for indentation (no tabs)
+- Line length: maximum 79 characters for code, 72 for comments
+- Use descriptive variable names with `lowercase_with_underscores`
+- Class names should use `UpperCamelCase`
+- Constants should use `UPPER_CASE_WITH_UNDERSCORES`
+- Add blank lines to separate functions and classes
+
+### Import Organization
+```python
+# Standard library imports first
+import os
+import asyncio
+from typing import List, Dict, Optional, Union
+from datetime import datetime, timedelta
+
+# Third-party imports
+import pandas as pd
+import numpy as np
+import yfinance as yf
+
+# AutoGen imports last
+from autogen_agentchat.agents import AssistantAgent, UserProxyAgent
+from autogen_ext.models.openai import OpenAIChatCompletionClient
+```
+
+### Documentation Requirements
+- All functions must have docstrings with parameters and return types
+- Use type hints for all function parameters and returns
+- Add inline comments for complex financial calculations
+- Document API rate limits and error handling strategies
+
+### AutoGen Agent Development Standards
+
+#### Agent Naming Convention
+- Agents should have descriptive names ending with "Agent"
+- Examples: `MarketDataAgent`, `TechnicalAnalysisAgent`, `RiskAssessmentAgent`
+
+#### Agent System Messages
+- Should be clear and specific about the agent's role
+- Include available tools and their usage
+- Specify output format requirements
+- Add error handling instructions
+
+#### Tool Integration
+- Financial APIs: Use `yfinance` as primary data source
+- Technical analysis: Use `pandas_ta` for indicators
+- Visualization: Prefer `plotly` for interactive charts
+- Risk calculations: Use `scipy` for optimization
+
+### Financial Data Handling
+
+#### Data Validation
+- Always validate ticker symbols before API calls
+- Check for sufficient historical data
+- Handle missing data gracefully
+- Implement retry logic for API failures
+
+#### Risk Disclosure
+- Include appropriate disclaimers in investment advice
+- Clearly state that outputs are for educational purposes
+- Remind users to consult financial advisors for actual investments
+
+### Error Handling Patterns
+```python
+try:
+    # Financial API call
+    data = yf.download(ticker, period="1y")
+    if data.empty:
+        return "No data available for the specified ticker"
+except Exception as e:
+    return f"Error fetching data: {str(e)}"
+```
+
+### Security Considerations
+- Store API keys in environment variables
+- Never commit sensitive information to version control
+- Implement rate limiting for external API calls
+- Validate user inputs to prevent injection attacks
+
+### Testing Requirements
+- Unit tests for all financial calculation functions
+- Mock external API calls in tests
+- Test edge cases (empty data, invalid tickers)
+- Validate output formats and data types
+
+## Project Structure Guidelines
+
+### Notebook Organization
+- Use clear section headers with appropriate markdown
+- Separate setup, agent definitions, and execution sections
+- Include example usage and test scenarios
+- Add performance benchmarks and success metrics
+
+### Dependencies Management
+- Pin versions for financial libraries
+- Use virtual environments for isolation
+- Document minimum Python version (3.10+)
+- Include requirements.txt with exact versions
+
+## AutoGen-Specific Best Practices
+
+### Agent Communication
+- Use SelectorGroupChat for multi-agent coordination
+- Implement proper termination conditions
+- Handle agent failures gracefully
+- Log agent interactions for debugging
+
+### Model Configuration
+- Use gemini-2.0-flash for complex financial analysis
+- Configure appropriate temperature settings (0.1-0.3 for analysis)
+- Set reasonable token limits for responses
+- Implement cost monitoring for API usage
+
+### Conversation Management
+- Maintain conversation context across agent interactions
+- Implement user session management
+- Provide clear progress indicators
+- Allow users to interrupt long-running analyses
+
+## Financial Analysis Standards
+
+### Technical Analysis
+- Use standard indicators (RSI, MACD, Bollinger Bands)
+- Provide clear buy/sell signal interpretations
+- Include confidence levels in recommendations
+- Show historical performance of signals
+
+### Risk Assessment
+- Calculate multiple risk metrics (VaR, Sharpe ratio, beta)
+- Use appropriate time horizons for different analyses
+- Consider correlation in portfolio analysis
+- Provide stress testing scenarios
+
+### Data Sources Priority
+1. Yahoo Finance (primary, free)
+2. Alpha Vantage (secondary, with API key)
+3. Financial Modeling Prep (tertiary, premium features)
+
+## Performance Guidelines
+- Cache frequently requested data
+- Use vectorized operations with pandas/numpy
+- Implement pagination for large datasets
+- Monitor memory usage for large historical datasets
+
+## Compliance and Ethics
+- Include investment disclaimers
+- Avoid making definitive predictions
+- Present multiple scenarios and outcomes
+- Encourage diversification and risk management

@@ -1,0 +1,367 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# AutoGen Framework Usage Guide
+
+## Overview
+This guide provides specific patterns and best practices for using Microsoft AutoGen Framework in the investment analysis chatbot project located in [main.ipynb](mdc:main.ipynb).
+
+## AutoGen Architecture Patterns
+
+### Agent Types and Roles
+
+#### UserProxyAgent - Orchestrator
+```python
+user_proxy = UserProxyAgent(
+    name="InvestmentAdvisor",
+    system_message="""You are an investment advisor coordinating a team of 
+    financial analysts. Route user queries to appropriate specialists and 
+    compile comprehensive investment recommendations.""",
+    code_execution_config=False,
+    human_input_mode="NEVER",
+    max_consecutive_auto_reply=3
+)
+```
+
+#### AssistantAgent - Specialists
+```python
+market_data_agent = AssistantAgent(
+    name="MarketDataAgent",
+    model_client=model_client,
+    system_message="""You specialize in retrieving and preprocessing 
+    financial market data. Use your tools to fetch accurate, up-to-date 
+    information about stocks, indices, and market conditions.""",
+    tools=[fetch_stock_data, get_market_indices, get_company_fundamentals]
+)
+```
+
+### Tool Integration Patterns
+
+#### Financial Data Tools
+```python
+def fetch_stock_data(ticker: str, period: str = "1y") -> str:
+    """
+    Fetch historical stock data for analysis.
+    
+    Args:
+        ticker: Stock symbol (e.g., 'AAPL', 'GOOGL')
+        period: Time period ('1d', '5d', '1mo', '3mo', '6mo', '1y', '2y', '5y', '10y', 'ytd', 'max')
+    
+    Returns:
+        JSON string with stock data or error message
+    """
+    try:
+        stock = yf.Ticker(ticker)
+        data = stock.history(period=period)
+        if data.empty:
+            return f"No data found for ticker {ticker}"
+        
+        # Return formatted data
+        return {
+            "ticker": ticker,
+            "current_price": float(data['Close'].iloc[-1]),
+            "price_change": float(data['Close'].iloc[-1] - data['Close'].iloc[-2]),
+            "volume": int(data['Volume'].iloc[-1]),
+            "data_points": len(data),
+            "period": period
+        }
+    except Exception as e:
+        return f"Error fetching data for {ticker}: {str(e)}"
+```
+
+#### Technical Analysis Tools
+```python
+def calculate_technical_indicators(ticker: str, indicators: List[str]) -> str:
+    """
+    Calculate technical indicators for a given stock.
+    
+    Args:
+        ticker: Stock symbol
+        indicators: List of indicators ['RSI', 'MACD', 'BB', 'SMA_20', 'EMA_50']
+    
+    Returns:
+        JSON string with calculated indicators
+    """
+    # Implementation details
+    pass
+```
+
+### Group Chat Configuration
+
+#### SelectorGroupChat Setup
+```python
+from autogen_agentchat.teams import SelectorGroupChat
+from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermination
+
+# Create the group chat
+investment_team = SelectorGroupChat(
+    participants=[
+        user_proxy,
+        market_data_agent,
+        technical_analysis_agent,
+        fundamental_analysis_agent,
+        risk_assessment_agent,
+        report_generation_agent
+    ],
+    model_client=model_client,
+    termination_condition=MaxMessageTermination(max_messages=20),
+    selector_prompt="""
+    Select the most appropriate agent based on the current conversation context:
+    
+    - MarketDataAgent: For fetching stock prices, market data, company information
+    - TechnicalAnalysisAgent: For chart analysis, technical indicators, trading signals
+    - FundamentalAnalysisAgent: For company valuation, financial ratios, earnings analysis
+    - RiskAssessmentAgent: For portfolio risk, VaR calculations, correlation analysis
+    - ReportGenerationAgent: For compiling final recommendations and summaries
+    
+    Choose the agent whose expertise best matches the current need.
+    """
+)
+```
+
+### Message Flow Patterns
+
+#### Structured Conversation Flow
+```python
+async def analyze_investment(ticker: str, analysis_type: str = "comprehensive"):
+    """
+    Coordinate multi-agent analysis of an investment opportunity.
+    
+    Args:
+        ticker: Stock symbol to analyze
+        analysis_type: 'technical', 'fundamental', 'risk', or 'comprehensive'
+    """
+    
+    # Initial data gathering
+    data_request = f"Fetch current and historical data for {ticker}"
+    data_response = await investment_team.run(task=data_request)
+    
+    # Technical analysis
+    if analysis_type in ['technical', 'comprehensive']:
+        tech_request = f"Perform technical analysis on {ticker} data"
+        tech_response = await investment_team.run(task=tech_request)
+    
+    # Fundamental analysis
+    if analysis_type in ['fundamental', 'comprehensive']:
+        fund_request = f"Evaluate {ticker} fundamentals and valuation"
+        fund_response = await investment_team.run(task=fund_request)
+    
+    # Risk assessment
+    if analysis_type in ['risk', 'comprehensive']:
+        risk_request = f"Assess investment risks for {ticker}"
+        risk_response = await investment_team.run(task=risk_request)
+    
+    # Generate final report
+    report_request = f"Compile comprehensive investment analysis for {ticker}"
+    final_report = await investment_team.run(task=report_request)
+    
+    return final_report
+```
+
+### Error Handling and Resilience
+
+#### Agent-Level Error Handling
+```python
+def create_resilient_agent(name: str, tools: List, system_message: str):
+    """Create an agent with robust error handling."""
+    
+    enhanced_system_message = f"""
+    {system_message}
+    
+    Error Handling Guidelines:
+    - If a tool fails, explain the error and suggest alternatives
+    - For data unavailability, provide estimated ranges or historical averages
+    - Always validate inputs before processing
+    - Return structured error messages that other agents can understand
+    """
+    
+    return AssistantAgent(
+        name=name,
+        model_client=model_client,
+        system_message=enhanced_system_message,
+        tools=tools
+    )
+```
+
+#### Graceful Degradation
+```python
+def handle_api_failure(primary_func, fallback_func, *args, **kwargs):
+    """
+    Implement fallback mechanisms for API failures.
+    """
+    try:
+        return primary_func(*args, **kwargs)
+    except Exception as e:
+        print(f"Primary API failed: {e}. Trying fallback...")
+        try:
+            return fallback_func(*args, **kwargs)
+        except Exception as e2:
+            return f"Both primary and fallback methods failed: {e}, {e2}"
+```
+
+### Performance Optimization
+
+#### Caching Strategy
+```python
+from functools import lru_cache
+from typing import Dict, Any
+
+@lru_cache(maxsize=128)
+def cached_stock_data(ticker: str, period: str) -> Dict[str, Any]:
+    """Cache stock data to reduce API calls."""
+    return fetch_stock_data(ticker, period)
+
+# Session-level cache for expensive calculations
+calculation_cache = {}
+
+def get_or_calculate_indicators(ticker: str, indicators: List[str]):
+    cache_key = f"{ticker}_{hash(tuple(indicators))}"
+    if cache_key in calculation_cache:
+        return calculation_cache[cache_key]
+    
+    result = calculate_technical_indicators(ticker, indicators)
+    calculation_cache[cache_key] = result
+    return result
+```
+
+#### Parallel Processing
+```python
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
+
+async def parallel_analysis(tickers: List[str]):
+    """Analyze multiple stocks in parallel."""
+    
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        tasks = [
+            asyncio.get_event_loop().run_in_executor(
+                executor, fetch_stock_data, ticker
+            )
+            for ticker in tickers
+        ]
+        results = await asyncio.gather(*tasks)
+    
+    return results
+```
+
+### Testing Patterns
+
+#### Mock Agents for Testing
+```python
+class MockMarketDataAgent:
+    """Mock agent for testing without API calls."""
+    
+    def __init__(self):
+        self.mock_data = {
+            'AAPL': {'price': 150.0, 'change': 2.5},
+            'GOOGL': {'price': 2800.0, 'change': -10.0}
+        }
+    
+    async def fetch_data(self, ticker: str):
+        return self.mock_data.get(ticker, {'error': 'Ticker not found'})
+```
+
+#### Integration Testing
+```python
+async def test_investment_analysis_flow():
+    """Test complete analysis workflow."""
+    
+    # Setup test environment with mock data
+    test_ticker = "AAPL"
+    
+    # Run analysis
+    result = await analyze_investment(test_ticker, "comprehensive")
+    
+    # Validate results
+    assert "price" in result
+    assert "recommendation" in result
+    assert "risk_level" in result
+    
+    return result
+```
+
+### Model Configuration Best Practices
+
+#### Temperature Settings
+```python
+# For factual data retrieval
+data_model_client = OpenAIChatCompletionClient(
+    model="gemini-2.0-flash",
+    temperature=0.1  # Low temperature for accuracy
+)
+
+# For creative analysis and recommendations
+analysis_model_client = OpenAIChatCompletionClient(
+    model="gemini-2.0-flash",
+    temperature=0.3  # Moderate temperature for balanced creativity
+)
+```
+
+#### Token Management
+```python
+def create_efficient_agent(name: str, max_tokens: int = 1000):
+    """Create agent with optimized token usage."""
+    
+    return AssistantAgent(
+        name=name,
+        model_client=OpenAIChatCompletionClient(
+            model="gemini-2.0-flash",
+            max_tokens=max_tokens,
+            temperature=0.2
+        ),
+        system_message=f"""
+        Keep responses concise and focused. Maximum {max_tokens} tokens.
+        Prioritize key insights and actionable information.
+        Use bullet points for clarity when appropriate.
+        """
+    )
+```
+
+### Monitoring and Logging
+
+#### Conversation Logging
+```python
+import logging
+from datetime import datetime
+
+def setup_conversation_logging():
+    """Setup logging for agent conversations."""
+    
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler('investment_chatbot.log'),
+            logging.StreamHandler()
+        ]
+    )
+    
+    return logging.getLogger('InvestmentChatbot')
+
+def log_agent_interaction(agent_name: str, message: str, response: str):
+    """Log agent interactions for analysis."""
+    
+    logger = logging.getLogger('InvestmentChatbot')
+    logger.info(f"Agent: {agent_name}")
+    logger.info(f"Input: {message}")
+    logger.info(f"Output: {response}")
+    logger.info("---")
+```
+
+## Common Patterns and Anti-Patterns
+
+### ✅ Good Practices
+- Use specific, descriptive agent names and roles
+- Implement proper error handling in all tools
+- Cache expensive API calls and calculations
+- Use structured data formats between agents
+- Include financial disclaimers in investment advice
+
+### ❌ Anti-Patterns to Avoid
+- Creating agents with overlapping responsibilities
+- Missing error handling in financial tools
+- Hard-coding API keys or sensitive information
+- Returning unstructured data between agents
+- Making definitive investment predictions without disclaimers

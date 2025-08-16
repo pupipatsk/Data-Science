@@ -1,0 +1,521 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Financial Analysis Standards and Best Practices
+
+## Overview
+This guide establishes standards for financial analysis, calculations, and data validation in the investment chatbot project [main.ipynb](mdc:main.ipynb).
+
+## Financial Data Standards
+
+### Data Sources Hierarchy
+1. **Primary**: Yahoo Finance (yfinance) - Free, reliable, good coverage
+2. **Secondary**: Alpha Vantage - API key required, professional grade
+3. **Tertiary**: Financial Modeling Prep - Premium features, extensive fundamentals
+
+### Data Validation Requirements
+
+#### Stock Ticker Validation
+```python
+import re
+
+def validate_ticker(ticker: str) -> bool:
+    """
+    Validate stock ticker format.
+    
+    Args:
+        ticker: Stock symbol to validate
+        
+    Returns:
+        bool: True if valid ticker format
+    """
+    # Basic validation: 1-5 uppercase letters
+    pattern = r'^[A-Z]{1,5}$'
+    return bool(re.match(pattern, ticker.upper()))
+
+def sanitize_ticker(ticker: str) -> str:
+    """Clean and standardize ticker input."""
+    return ticker.strip().upper()
+```
+
+#### Data Quality Checks
+```python
+def validate_price_data(data: pd.DataFrame) -> Dict[str, Any]:
+    """
+    Validate stock price data quality.
+    
+    Returns:
+        dict: Validation results with warnings and errors
+    """
+    validation_results = {
+        'is_valid': True,
+        'warnings': [],
+        'errors': []
+    }
+    
+    # Check for empty data
+    if data.empty:
+        validation_results['is_valid'] = False
+        validation_results['errors'].append("No data available")
+        return validation_results
+    
+    # Check for sufficient data points
+    if len(data) < 30:
+        validation_results['warnings'].append(
+            f"Limited data points: {len(data)} (recommended: 30+)"
+        )
+    
+    # Check for price anomalies
+    price_changes = data['Close'].pct_change()
+    extreme_changes = abs(price_changes) > 0.5  # 50% change
+    
+    if extreme_changes.any():
+        validation_results['warnings'].append(
+            "Extreme price movements detected - verify data accuracy"
+        )
+    
+    # Check for missing values
+    missing_values = data.isnull().sum().sum()
+    if missing_values > 0:
+        validation_results['warnings'].append(
+            f"Missing values detected: {missing_values}"
+        )
+    
+    return validation_results
+```
+
+## Technical Analysis Standards
+
+### Indicator Calculations
+
+#### Moving Averages
+```python
+def calculate_moving_averages(data: pd.DataFrame, periods: List[int] = [20, 50, 200]) -> pd.DataFrame:
+    """
+    Calculate Simple Moving Averages (SMA).
+    
+    Args:
+        data: DataFrame with OHLCV data
+        periods: List of periods for moving averages
+        
+    Returns:
+        DataFrame with additional SMA columns
+    """
+    result = data.copy()
+    
+    for period in periods:
+        if len(data) >= period:
+            result[f'SMA_{period}'] = data['Close'].rolling(window=period).mean()
+        else:
+            print(f"Warning: Insufficient data for SMA_{period}")
+    
+    return result
+```
+
+#### RSI (Relative Strength Index)
+```python
+def calculate_rsi(data: pd.Series, period: int = 14) -> pd.Series:
+    """
+    Calculate RSI indicator.
+    
+    Args:
+        data: Price series (typically 'Close')
+        period: RSI period (default 14)
+        
+    Returns:
+        Series with RSI values
+    """
+    if len(data) < period:
+        raise ValueError(f"Insufficient data for RSI calculation. Need {period}, got {len(data)}")
+    
+    delta = data.diff()
+    gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
+    loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
+    
+    rs = gain / loss
+    rsi = 100 - (100 / (1 + rs))
+    
+    return rsi
+```
+
+#### MACD (Moving Average Convergence Divergence)
+```python
+def calculate_macd(data: pd.Series, fast: int = 12, slow: int = 26, signal: int = 9) -> pd.DataFrame:
+    """
+    Calculate MACD indicator.
+    
+    Args:
+        data: Price series
+        fast: Fast EMA period
+        slow: Slow EMA period
+        signal: Signal line EMA period
+        
+    Returns:
+        DataFrame with MACD, Signal, and Histogram
+    """
+    ema_fast = data.ewm(span=fast).mean()
+    ema_slow = data.ewm(span=slow).mean()
+    
+    macd = ema_fast - ema_slow
+    signal_line = macd.ewm(span=signal).mean()
+    histogram = macd - signal_line
+    
+    return pd.DataFrame({
+        'MACD': macd,
+        'Signal': signal_line,
+        'Histogram': histogram
+    })
+```
+
+### Signal Generation
+
+#### Trading Signals
+```python
+def generate_trading_signals(data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Generate buy/sell signals based on technical indicators.
+    
+    Args:
+        data: DataFrame with price and indicator data
+        
+    Returns:
+        DataFrame with signal columns
+    """
+    signals = data.copy()
+    
+    # RSI signals
+    signals['RSI_Oversold'] = data['RSI'] < 30
+    signals['RSI_Overbought'] = data['RSI'] > 70
+    
+    # MACD signals
+    signals['MACD_Bull'] = (data['MACD'] > data['Signal']) & (data['MACD'].shift(1) <= data['Signal'].shift(1))
+    signals['MACD_Bear'] = (data['MACD'] < data['Signal']) & (data['MACD'].shift(1) >= data['Signal'].shift(1))
+    
+    # Moving average crossover
+    if 'SMA_20' in data.columns and 'SMA_50' in data.columns:
+        signals['MA_Golden_Cross'] = (data['SMA_20'] > data['SMA_50']) & (data['SMA_20'].shift(1) <= data['SMA_50'].shift(1))
+        signals['MA_Death_Cross'] = (data['SMA_20'] < data['SMA_50']) & (data['SMA_20'].shift(1) >= data['SMA_50'].shift(1))
+    
+    return signals
+```
+
+## Fundamental Analysis Standards
+
+### Financial Ratios
+
+#### Valuation Ratios
+```python
+def calculate_valuation_ratios(price: float, eps: float, book_value: float, sales_per_share: float) -> Dict[str, float]:
+    """
+    Calculate key valuation ratios.
+    
+    Args:
+        price: Current stock price
+        eps: Earnings per share
+        book_value: Book value per share
+        sales_per_share: Sales per share
+        
+    Returns:
+        dict: Dictionary of calculated ratios
+    """
+    ratios = {}
+    
+    # Price-to-Earnings Ratio
+    ratios['PE_Ratio'] = price / eps if eps > 0 else None
+    
+    # Price-to-Book Ratio
+    ratios['PB_Ratio'] = price / book_value if book_value > 0 else None
+    
+    # Price-to-Sales Ratio
+    ratios['PS_Ratio'] = price / sales_per_share if sales_per_share > 0 else None
+    
+    return ratios
+```
+
+#### Profitability Ratios
+```python
+def calculate_profitability_ratios(net_income: float, revenue: float, total_assets: float, equity: float) -> Dict[str, float]:
+    """
+    Calculate profitability ratios.
+    
+    Args:
+        net_income: Net income
+        revenue: Total revenue
+        total_assets: Total assets
+        equity: Shareholders' equity
+        
+    Returns:
+        dict: Profitability ratios
+    """
+    ratios = {}
+    
+    # Net Profit Margin
+    ratios['Net_Margin'] = (net_income / revenue) * 100 if revenue > 0 else None
+    
+    # Return on Assets (ROA)
+    ratios['ROA'] = (net_income / total_assets) * 100 if total_assets > 0 else None
+    
+    # Return on Equity (ROE)
+    ratios['ROE'] = (net_income / equity) * 100 if equity > 0 else None
+    
+    return ratios
+```
+
+### DCF (Discounted Cash Flow) Model
+```python
+def calculate_dcf_value(cash_flows: List[float], discount_rate: float, terminal_growth_rate: float = 0.02) -> float:
+    """
+    Calculate intrinsic value using DCF model.
+    
+    Args:
+        cash_flows: List of projected free cash flows
+        discount_rate: Weighted Average Cost of Capital (WACC)
+        terminal_growth_rate: Long-term growth rate
+        
+    Returns:
+        float: Calculated intrinsic value per share
+    """
+    if not cash_flows or discount_rate <= 0:
+        raise ValueError("Invalid inputs for DCF calculation")
+    
+    # Present value of projected cash flows
+    pv_cash_flows = 0
+    for i, cf in enumerate(cash_flows):
+        pv_cash_flows += cf / ((1 + discount_rate) ** (i + 1))
+    
+    # Terminal value
+    terminal_cf = cash_flows[-1] * (1 + terminal_growth_rate)
+    terminal_value = terminal_cf / (discount_rate - terminal_growth_rate)
+    pv_terminal_value = terminal_value / ((1 + discount_rate) ** len(cash_flows))
+    
+    # Total enterprise value
+    enterprise_value = pv_cash_flows + pv_terminal_value
+    
+    return enterprise_value
+```
+
+## Risk Assessment Standards
+
+### Value at Risk (VaR)
+```python
+def calculate_var(returns: pd.Series, confidence_level: float = 0.05) -> Dict[str, float]:
+    """
+    Calculate Value at Risk using multiple methods.
+    
+    Args:
+        returns: Series of historical returns
+        confidence_level: Confidence level (0.05 = 95% confidence)
+        
+    Returns:
+        dict: VaR calculations using different methods
+    """
+    var_results = {}
+    
+    # Historical VaR
+    var_results['Historical_VaR'] = returns.quantile(confidence_level)
+    
+    # Parametric VaR (assuming normal distribution)
+    from scipy.stats import norm
+    mean_return = returns.mean()
+    std_return = returns.std()
+    var_results['Parametric_VaR'] = norm.ppf(confidence_level, mean_return, std_return)
+    
+    # Modified VaR (Cornish-Fisher expansion)
+    from scipy.stats import skew, kurtosis
+    skewness = skew(returns)
+    kurt = kurtosis(returns)
+    z_score = norm.ppf(confidence_level)
+    
+    # Cornish-Fisher adjustment
+    cf_adjustment = (z_score + 
+                    (z_score**2 - 1) * skewness / 6 + 
+                    (z_score**3 - 3*z_score) * kurt / 24 - 
+                    (2*z_score**3 - 5*z_score) * skewness**2 / 36)
+    
+    var_results['Modified_VaR'] = mean_return + std_return * cf_adjustment
+    
+    return var_results
+```
+
+### Portfolio Risk Metrics
+```python
+def calculate_portfolio_risk(weights: np.array, cov_matrix: np.array) -> Dict[str, float]:
+    """
+    Calculate portfolio risk metrics.
+    
+    Args:
+        weights: Portfolio weights
+        cov_matrix: Covariance matrix of returns
+        
+    Returns:
+        dict: Risk metrics
+    """
+    # Portfolio variance
+    portfolio_variance = np.dot(weights.T, np.dot(cov_matrix, weights))
+    portfolio_volatility = np.sqrt(portfolio_variance)
+    
+    # Diversification ratio
+    weighted_avg_volatility = np.sum(weights * np.sqrt(np.diag(cov_matrix)))
+    diversification_ratio = weighted_avg_volatility / portfolio_volatility
+    
+    return {
+        'Portfolio_Volatility': portfolio_volatility,
+        'Portfolio_Variance': portfolio_variance,
+        'Diversification_Ratio': diversification_ratio
+    }
+```
+
+### Sharpe Ratio
+```python
+def calculate_sharpe_ratio(returns: pd.Series, risk_free_rate: float = 0.02) -> float:
+    """
+    Calculate Sharpe ratio.
+    
+    Args:
+        returns: Series of returns
+        risk_free_rate: Risk-free rate (annual)
+        
+    Returns:
+        float: Sharpe ratio
+    """
+    excess_returns = returns.mean() - risk_free_rate / 252  # Daily risk-free rate
+    return excess_returns / returns.std() if returns.std() > 0 else 0
+```
+
+## Data Visualization Standards
+
+### Chart Types and Requirements
+```python
+def create_price_chart(data: pd.DataFrame, title: str) -> go.Figure:
+    """
+    Create standardized price chart with volume.
+    
+    Args:
+        data: OHLCV data
+        title: Chart title
+        
+    Returns:
+        plotly.graph_objects.Figure: Interactive chart
+    """
+    fig = go.Figure()
+    
+    # Candlestick chart
+    fig.add_trace(go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        high=data['High'],
+        low=data['Low'],
+        close=data['Close'],
+        name='Price'
+    ))
+    
+    # Volume subplot
+    fig.add_trace(go.Bar(
+        x=data.index,
+        y=data['Volume'],
+        name='Volume',
+        yaxis='y2',
+        opacity=0.3
+    ))
+    
+    # Layout configuration
+    fig.update_layout(
+        title=title,
+        yaxis=dict(title='Price ($)', side='left'),
+        yaxis2=dict(title='Volume', side='right', overlaying='y'),
+        xaxis_rangeslider_visible=False,
+        height=600
+    )
+    
+    return fig
+```
+
+## Error Handling and Data Quality
+
+### Missing Data Handling
+```python
+def handle_missing_data(data: pd.DataFrame, method: str = 'forward_fill') -> pd.DataFrame:
+    """
+    Handle missing data in financial time series.
+    
+    Args:
+        data: DataFrame with potential missing values
+        method: Method to handle missing data
+        
+    Returns:
+        DataFrame: Cleaned data
+    """
+    if method == 'forward_fill':
+        return data.fillna(method='ffill')
+    elif method == 'interpolate':
+        return data.interpolate(method='linear')
+    elif method == 'drop':
+        return data.dropna()
+    else:
+        raise ValueError(f"Unknown method: {method}")
+```
+
+### Outlier Detection
+```python
+def detect_outliers(data: pd.Series, method: str = 'iqr') -> pd.Series:
+    """
+    Detect outliers in financial data.
+    
+    Args:
+        data: Data series
+        method: Outlier detection method ('iqr', 'z_score')
+        
+    Returns:
+        Boolean series indicating outliers
+    """
+    if method == 'iqr':
+        Q1 = data.quantile(0.25)
+        Q3 = data.quantile(0.75)
+        IQR = Q3 - Q1
+        lower_bound = Q1 - 1.5 * IQR
+        upper_bound = Q3 + 1.5 * IQR
+        return (data < lower_bound) | (data > upper_bound)
+    
+    elif method == 'z_score':
+        z_scores = abs((data - data.mean()) / data.std())
+        return z_scores > 3
+    
+    else:
+        raise ValueError(f"Unknown method: {method}")
+```
+
+## Compliance and Disclaimers
+
+### Investment Disclaimers
+```python
+INVESTMENT_DISCLAIMER = """
+⚠️ INVESTMENT DISCLAIMER:
+This analysis is for educational and informational purposes only and should not be 
+considered as financial advice. Past performance is not indicative of future results. 
+Always consult with a qualified financial advisor before making investment decisions.
+
+Key Risks:
+- Market volatility can lead to significant losses
+- Historical data may not predict future performance
+- All investments carry inherent risks
+- Diversification does not guarantee profits or protect against losses
+"""
+
+def add_disclaimer_to_output(analysis_result: str) -> str:
+    """Add investment disclaimer to analysis output."""
+    return f"{analysis_result}\n\n{INVESTMENT_DISCLAIMER}"
+```
+
+### Data Attribution
+```python
+DATA_ATTRIBUTION = """
+Data Sources:
+- Stock prices: Yahoo Finance
+- Market data: Various financial data providers
+- Analysis: Computational algorithms and statistical models
+
+Note: Data accuracy and timeliness cannot be guaranteed. 
+Users should verify important information independently.
+"""
